@@ -1,5 +1,3 @@
-import {NotImplementedError} from '../extensions/index.js';
-
 let chainMaker = {
     array: [],
     getLength() {

@@ -1,5 +1,3 @@
-import {NotImplementedError} from '../extensions/index.js';
-
 const MIN_CHAR_CODE = 97;
 const MAX_CHAR_CODE = 122;
 
@@ -44,7 +42,7 @@ function reverseStr(text) {
  * reverseMachine.decrypt('AEIHQX SX DLLU!', 'alphonse') => '!NWAD TA KCATTA'
  *
  */
-export default class VigenereCipheringMachine {
+class VigenereCipheringMachine {
 
   _direct = true
 
