@@ -1,5 +1,30 @@
 import {NotImplementedError} from '../extensions/index.js';
 
+const MIN_CHAR_CODE = 97;
+const MAX_CHAR_CODE = 122;
+
+function extractKeyCharCodes(key) {
+  key = key.toLowerCase()
+  let keyCharsCodes = [];
+  for (let j = 0; j < key.length; j++) {
+    keyCharsCodes.push((key[j].charCodeAt() - MIN_CHAR_CODE) % 26)
+  }
+  return keyCharsCodes
+}
+
+function isValidArgs(message, key) {
+  if (!message || message.length < 1) {
+    return false
+  }
+  if (!key || key.length < 1) {
+    return false
+  }
+  return true
+
+}
+function reverseStr(text) {
+  return text.split('').reverse().join('')
+}
 /**
  * Implement class VigenereCipheringMachine that allows us to create
  * direct and reverse ciphering machines according to task description
@@ -29,132 +54,89 @@ export default class VigenereCipheringMachine {
     }
   }
 
+  prepareResult(result) {
+    if (!this._direct) {
+      result = reverseStr(result)
+    }
+    return result.toUpperCase().trim()
+  }
+
   encrypt(message, key) {
-    if (arguments.length < 2) {
-      throw new Error('Incorrect arguments!');
-    }
-    if (!message || message.length < 1) {
-      throw new Error('Incorrect arguments!');
-    }
-    if (!key || key.length < 1) {
+    if (arguments.length < 2 || !isValidArgs(message, key)) {
       throw new Error('Incorrect arguments!');
     }
 
     let result = '';
 
-    let keyCharsCodes = [];
+    const keyCharsCodes = extractKeyCharCodes(key)
 
-    message = message.toLowerCase();
-    key = key.toLowerCase()
-
-    for (let j = 0; j < key.length; j++) {
-      keyCharsCodes.push((key[j].charCodeAt() - 97) % 26)
-    }
-
-    let words = message.split(' ');
+    let words = message.toLowerCase().split(' ');
 
     let keyCharIndex = 0;
 
-    let cipher_i;
-
-    for (let word = 0; word < words.length; word++) {
-
-      for (let wordCharIndex = 0; wordCharIndex < words[word].length; wordCharIndex++) {
-
+    for (let word of words) {
+      for (let char of word) {
         let shift = keyCharsCodes[keyCharIndex % keyCharsCodes.length];
 
-        let charCode = words[word][wordCharIndex].charCodeAt();
+        let charCode = char.charCodeAt();
 
-        if (charCode < 97 || charCode > 122) {
-          result += words[word][wordCharIndex];
+        if (charCode < MIN_CHAR_CODE || charCode > MAX_CHAR_CODE) {
+          result += char
           continue;
         }
 
-        cipher_i = (charCode - 97 + shift) % 26;
+        let cipher = (charCode - MIN_CHAR_CODE + shift) % 26;
 
-        result += String.fromCharCode(97 + cipher_i);
+        result += String.fromCharCode(MIN_CHAR_CODE + cipher);
 
         keyCharIndex = keyCharIndex + 1;
-
 
         if (keyCharIndex > keyCharsCodes.length - 1) {
           keyCharIndex = 0;
         }
       }
 
-
       result += ' '
     }
-    result = result.toUpperCase().trim()
-    if (!this._direct) {
-      result = result.split('').reverse().join('')
-    }
-    return result
+
+    return this.prepareResult(result)
   }
 
   decrypt(encryptedMessage, key) {
 
-    if (arguments.length < 2) {
-      throw new Error('Incorrect arguments!');
-    }
-
-    if (!encryptedMessage) {
-      throw new Error('Incorrect arguments!');
-    }
-    if (!key) {
-      throw new Error('Incorrect arguments!');
-    }
-
-    if (encryptedMessage.length < 1) {
-      throw new Error('Incorrect arguments!');
-    }
-    if (key.length < 1) {
+    if (arguments.length < 2 || !isValidArgs(encryptedMessage, key)) {
       throw new Error('Incorrect arguments!');
     }
 
     let result = '';
 
-    let keyCharsCodes = [];
+    const keyCharsCodes = extractKeyCharCodes(key)
 
-    encryptedMessage = encryptedMessage.toLowerCase();
-    key = key.toLowerCase();
-
-    // if (!this._direct) {
-    //   encryptedMessage = encryptedMessage.split('').reverse().join('')
-    // }
-
-    for (let j = 0; j < key.length; j++) {
-      keyCharsCodes.push((key[j].charCodeAt() - 97) % 26)
-    }
-
-    let words = encryptedMessage.split(' ');
+    let words = encryptedMessage.toLowerCase().split(' ');
 
     let keyCharIndex = 0;
 
-    let cipher_i;
-
-    for (let word = 0; word < words.length; word++) {
-
-      for (let wordCharIndex = 0; wordCharIndex < words[word].length; wordCharIndex++) {
+    for (const word of words) {
+      for (const char of word) {
 
         let shift = keyCharsCodes[keyCharIndex % keyCharsCodes.length];
 
-        let charCode = words[word][wordCharIndex].charCodeAt();
+        let charCode = char.charCodeAt();
 
-        if (charCode < 97 || charCode > 122) {
+        if (charCode < MIN_CHAR_CODE || charCode > MAX_CHAR_CODE) {
 
-          result += words[word][wordCharIndex];
+          result += char;
 
           continue;
         }
 
-        cipher_i = (charCode - 97 - shift) % 26;
+        let cipher = (charCode - MIN_CHAR_CODE - shift) % 26;
 
-        if (cipher_i < 0) {
-          cipher_i = 26 + cipher_i;
+        if (cipher < 0) {
+          cipher = 26 + cipher;
         }
 
-        result += String.fromCharCode(97 + cipher_i);
+        result += String.fromCharCode(MIN_CHAR_CODE + cipher);
 
         keyCharIndex = keyCharIndex + 1;
 
@@ -166,11 +148,7 @@ export default class VigenereCipheringMachine {
       result += ' '
     }
 
-
-    if (!this._direct) {
-      result = result.split('').reverse().join('')
-    }
-    return result.toUpperCase().trim()
+    return this.prepareResult(result)
   }
 }
 
