@@ -1,7 +1,7 @@
 /**
  * Create a repeating string based on the given parameters
  *  
- * @param {String} str string to repeat
+ * @param {String} string string to repeat
  * @param {Object} options options object 
  * @return {String} repeating string
  * 
@@ -14,78 +14,54 @@
  *
  */
 
-function repeater(str = isRequired(''),
-                  options= {separator: '+', additionSeparator: '|' }) {
+function repeater(string, {
+  repeatTimes = 1,
+  separator = "+",
+  addition = '',
+  additionRepeatTimes = 1,
+  additionSeparator = '|'})
+{
 
-  console.log(str, options)
-
-  //check data
-
-  if(typeof str !== "string"){
-    str = toString(str);
+  if (addition && typeof addition !== 'string') {
+    String(addition);
   }
-
-  if(typeof options.addition !== 'string'){
-    options.addition = toString(options.addition);
+  if (string && typeof string !== 'string') {
+    String(string);
   }
-
-  if(!options.repeatTimes){
-    options.repeatTimes = 1;
-  }
-
-  if(!options.additionRepeatTimes){
-    options.additionRepeatTimes = 0;
-  }
-
-  //
 
   let result = '';
 
-  for(let i = 0; i < options.repeatTimes; i++) {
+  for(let i = 0; i < repeatTimes; i++) {
 
-    result = result+str;
+    result = result+string;
 
-    if(options.additionRepeatTimes){
+    if(additionRepeatTimes){
 
-      for (let j = 0; j < options.additionRepeatTimes; j++){
+            for (let j = 0; j < additionRepeatTimes; j++){
 
-        if(options.additionSeparator){
-          result = result + options.addition + options.additionSeparator;
+              if(additionSeparator){
+                result = result + addition + additionSeparator;
+              }
+            }
+
+        if(additionSeparator){
+          result = result.slice(0, result.length - additionSeparator.length)
         }
-      }
 
-      if(options.additionSeparator){
-        result = result.slice(0, result.length - options.additionSeparator.length)
-      }
-
-    }else if(!options.additionRepeatTimes && options.addition){
-      result = result+options.addition;
+    }else if(!additionRepeatTimes && addition){
+      result = result+addition;
     }
 
-    if(options.separator){
-      result = result + options.separator;
+    if(separator){
+      result = result + separator;
     }
-
 
   }
 
-  result = result.slice(0, result.length - options.separator.length)
+  result = result.slice(0, result.length - separator.length)
 
   return result;
 }
-
-// console.log(repeater('STRING', { repeatTimes: 3, separator: '**', addition: 'PLUS', additionRepeatTimes: 3, additionSeparator: '00' }))
-
-//'STRING PLUS 00 PLUS00 PLUS** STRINGPLUS00PLUS00PLUS**STRINGPLUS00PLUS00PLUS'
-//str + options.addition + options.additionSeparator
-
-// console.log(repeater('la', { repeatTimes: 3 }))
-
-// console.log(repeater('la', { repeatTimes: 3, separator: 's', addition: '+', additionRepeatTimes: 1 }))
-  //'la+sla+sla+'
-
-// console.log(repeater('TESTstr', { separator: 'ds', addition: 'ADD!', additionSeparator: ')))000' }))
-//'TESTstrADD!'
 
 module.exports = {
   repeater
